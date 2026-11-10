@@ -1,0 +1,24 @@
+# CHIS web access rules for this folder (kept here too so a separately deployed copy stays protected).
+# Requires AllowOverride All (XAMPP default for htdocs; LiteSpeed/Hostinger also read this file).
+
+# No directory listings.
+Options -Indexes
+
+# Never serve secrets, dumps, logs, docs or tooling files.
+# PDFs stay public: system/user_manual.php links to the user manual PDFs.
+<FilesMatch "(^\.|\.(env|sql|log|txt|md|zip|phar|lock|json|bak|ini|rpt|code-workspace)$|^composer\.)">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Composer dependencies are server-side only.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule (^|/)vendor(/|$) - [F,L]
+    RewriteRule (^|/)\.git(/|$) - [F,L]
+</IfModule>
